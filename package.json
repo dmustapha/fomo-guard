@@ -1,12 +1,14 @@
 {
-  "name": "fomo-guard-scaffold",
-  "version": "0.1.0",
+  "name": "fomo-guard",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "npx tsx scripts/seed-demo.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@crossmint/client-sdk-react-ui": "^4.1.5",
