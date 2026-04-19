@@ -80,12 +80,22 @@ export function VaultLifecycle() {
 
   async function handleBuy() {
     if (!state.asset) return;
+
+    const walletAddress = process.env.NEXT_PUBLIC_DEMO_WALLET_ADDRESS;
+    if (!walletAddress || walletAddress.includes("your_") || walletAddress === "placeholder") {
+      setState((s) => ({
+        ...s,
+        error: "Demo wallet address not configured. Set NEXT_PUBLIC_DEMO_WALLET_ADDRESS in .env.local",
+      }));
+      return;
+    }
+
     setState((s) => ({ ...s, step: "buying", error: null }));
 
     try {
       const result = await buyVaultAsset(
         state.asset.slug,
-        process.env.NEXT_PUBLIC_DEMO_WALLET_ADDRESS ?? "",
+        walletAddress,
         "demo@fomoguard.xyz"
       );
       setState((s) => ({

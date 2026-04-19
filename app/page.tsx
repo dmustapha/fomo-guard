@@ -16,22 +16,32 @@ export default function HomePage() {
   const [analysis, setAnalysis] = useState<FomoAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [totalSaved, setTotalSaved] = useState(0);
+  const [seenScenarios, setSeenScenarios] = useState<Set<string>>(new Set());
+  const [error, setError] = useState<string | null>(null);
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
   const [customInput, setCustomInput] = useState("");
 
   const runAnalysis = useCallback(async (message: string, scenarioId?: string) => {
     setIsLoading(true);
+    setError(null);
     setUserMessage(message);
     setActiveScenarioId(scenarioId ?? null);
 
     try {
       const result = await analyzeIntent(message, scenarioId);
       setAnalysis(result);
-      setTotalSaved((prev) => prev + result.savingsAmount);
+      // Only add savings once per scenario to prevent inflation on repeated clicks
+      const key = scenarioId ?? message;
+      if (result.savingsAmount > 0 && !seenScenarios.has(key)) {
+        setSeenScenarios((prev) => new Set(prev).add(key));
+        setTotalSaved((prev) => prev + result.savingsAmount);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Try a scenario button instead.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [seenScenarios]);
 
   function handleScenarioSelect(scenario: DemoScenario) {
     runAnalysis(scenario.userMessage, scenario.id);
@@ -77,7 +87,15 @@ export default function HomePage() {
           scenarios={DEMO_SCENARIOS}
           onSelect={handleScenarioSelect}
           activeId={activeScenarioId}
+          disabled={isLoading}
         />
+
+        {/* Error display */}
+        {error && (
+          <p className="text-sm text-red-400 bg-red-500/10 rounded-lg px-4 py-2 text-center">
+            {error}
+          </p>
+        )}
 
         {/* Custom Input */}
         <form onSubmit={handleCustomSubmit} className="flex gap-3">

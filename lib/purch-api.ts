@@ -9,6 +9,15 @@ import type {
 
 const BASE = "https://api.purch.xyz";
 
+async function safeJson<T>(res: Response, label: string): Promise<T> {
+  const text = await res.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(`${label}: expected JSON but got: ${text.slice(0, 100)}`);
+  }
+}
+
 export async function searchProducts(
   query: string,
   options?: { priceMax?: number; brand?: string; page?: number }
@@ -21,7 +30,7 @@ export async function searchProducts(
 
   const res = await fetchWithPay(`${BASE}/x402/search?${params}`);
   if (!res.ok) throw new Error(`Search failed: ${res.status}`);
-  return res.json();
+  return safeJson<SearchResponse>(res, "Search");
 }
 
 export async function shopWithAI(
@@ -35,7 +44,7 @@ export async function shopWithAI(
     body: JSON.stringify({ message, context }),
   });
   if (!res.ok) throw new Error(`Shop failed: ${res.status}`);
-  return res.json();
+  return safeJson<ShopResponse>(res, "Shop");
 }
 
 export async function vaultSearch(
@@ -49,7 +58,7 @@ export async function vaultSearch(
 
   const res = await fetchWithPay(`${BASE}/x402/vault/search?${params}`);
   if (!res.ok) throw new Error(`Vault search failed: ${res.status}`);
-  return res.json();
+  return safeJson<VaultSearchResponse>(res, "Vault search");
 }
 
 export async function vaultBuy(
@@ -64,7 +73,7 @@ export async function vaultBuy(
     body: JSON.stringify({ slug, walletAddress, email }),
   });
   if (!res.ok) throw new Error(`Vault buy failed: ${res.status}`);
-  return res.json();
+  return safeJson<VaultBuyResponse>(res, "Vault buy");
 }
 
 export async function vaultDownload(
