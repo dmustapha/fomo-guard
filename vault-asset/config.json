@@ -1,0 +1,8 @@
+{
+  "temperature": 0.7,
+  "maxTokens": 500,
+  "savingsThreshold": 10,
+  "solPriceEstimate": 300,
+  "maxAlternatives": 3,
+  "defaultPriceCapMultiplier": 0.7
+}

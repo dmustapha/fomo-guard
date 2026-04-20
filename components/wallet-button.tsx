@@ -1,17 +1,29 @@
 // components/wallet-button.tsx
 "use client";
 
-import { useCrossmintAuth } from "@crossmint/client-sdk-react-ui";
+import { useCrossmintAuth, useWallet } from "@crossmint/client-sdk-react-ui";
 import { useEffect, useState } from "react";
 
 function WalletButtonInner() {
-  const { login, logout, user, status } = useCrossmintAuth();
+  const { login, logout, user, status: authStatus } = useCrossmintAuth();
+  const { wallet, status: walletStatus } = useWallet();
+  const [usdcBalance, setUsdcBalance] = useState<string | null>(null);
 
-  if (status === "initializing" || status === "in-progress") {
+  useEffect(() => {
+    if (wallet && walletStatus === "loaded") {
+      wallet.balances().then((b) => {
+        setUsdcBalance(b.usdc.amount);
+      }).catch(() => {
+        setUsdcBalance(null);
+      });
+    }
+  }, [wallet, walletStatus]);
+
+  if (authStatus === "initializing" || authStatus === "in-progress") {
     return (
       <button
         disabled
-        className="px-4 py-2 rounded-lg bg-gray-800 text-gray-500 text-sm"
+        className="px-4 py-2 rounded-xl bg-fg-raised border border-fg-border-subtle text-fg-text-muted text-sm"
       >
         Loading...
       </button>
@@ -19,16 +31,24 @@ function WalletButtonInner() {
   }
 
   if (user) {
-    const short = user.email
-      ? user.email
-      : `${user.id.slice(0, 6)}...${user.id.slice(-4)}`;
+    const address = wallet?.address;
+    const shortAddr = address
+      ? `${address.slice(0, 4)}...${address.slice(-4)}`
+      : null;
 
     return (
       <div className="flex items-center gap-3">
-        <span className="text-sm text-emerald-400 font-mono">{short}</span>
+        {usdcBalance !== null && (
+          <span className="text-xs font-mono text-fg-accent bg-fg-accent/10 px-2 py-1 rounded-lg">
+            {parseFloat(usdcBalance).toFixed(2)} USDC
+          </span>
+        )}
+        <span className="text-sm text-fg-text-secondary font-mono text-[13px]">
+          {shortAddr ?? user.email ?? `${user.id.slice(0, 6)}...${user.id.slice(-4)}`}
+        </span>
         <button
           onClick={logout}
-          className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm transition-colors"
+          className="px-3 py-1.5 rounded-xl fg-card text-fg-text-secondary text-sm hover:text-fg-text transition-colors duration-200"
         >
           Disconnect
         </button>
@@ -39,7 +59,7 @@ function WalletButtonInner() {
   return (
     <button
       onClick={login}
-      className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors"
+      className="px-4 py-2 rounded-xl bg-fg-accent text-fg-base text-sm font-semibold transition-colors duration-200 hover:brightness-110"
     >
       Connect Wallet
     </button>
@@ -55,15 +75,9 @@ export function WalletButton() {
   }, []);
 
   if (!hasCrossmint) {
-    return (
-      <button
-        disabled
-        className="px-4 py-2 rounded-lg bg-gray-800 text-gray-500 text-sm"
-      >
-        Wallet (configure API key)
-      </button>
-    );
+    return null;
   }
 
   return <WalletButtonInner />;
 }
+

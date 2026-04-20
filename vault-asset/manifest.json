@@ -1,0 +1,11 @@
+{
+  "name": "FOMO Guard",
+  "version": "1.0.0",
+  "type": "persona",
+  "description": "Your rational brain for impulsive buying decisions. Intercepts purchase intent, finds smarter alternatives on Purch, and saves you money with crypto-native analysis.",
+  "author": "FOMO Labs",
+  "category": "productivity",
+  "tags": ["shopping", "savings", "impulse-control", "purch", "defi", "crypto"],
+  "entryPoint": "system-prompt.md",
+  "requiredApis": ["/x402/search", "/x402/shop"]
+}

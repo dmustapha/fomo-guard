@@ -1,13 +1,178 @@
 @import "tailwindcss";
 
 @theme {
-  --color-fomo-green: #00ff88;
-  --color-fomo-red: #ff4444;
-  --color-fomo-dark: #0a0a0a;
-  --color-fomo-card: #1a1a2e;
-  --color-fomo-border: #2a2a4a;
+  /* Surfaces — elevation-based depth */
+  --color-fg-base: #060608;
+  --color-fg-raised: #0f1014;
+  --color-fg-overlay: #161820;
+  --color-fg-elevated: #1e2028;
+
+  /* Borders */
+  --color-fg-border: #262830;
+  --color-fg-border-subtle: #1c1e26;
+
+  /* Accent — emerald green identity */
+  --color-fg-accent: #00e878;
+  --color-fg-accent-dim: #00c866;
+  --color-fg-accent-glow: #00e87833;
+  --color-fg-accent-light: #00ffaa;
+
+  /* Danger — FOMO red */
+  --color-fg-danger: #ef4444;
+  --color-fg-danger-dim: #dc2626;
+  --color-fg-danger-glow: #ef444433;
+
+  /* Text */
+  --color-fg-text: #f0f0f5;
+  --color-fg-text-secondary: #8b8d98;
+  --color-fg-text-muted: #7a7d86;
 }
 
+/* Base */
 body {
-  @apply bg-fomo-dark text-white antialiased;
+  background: var(--color-fg-base);
+  color: var(--color-fg-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-fg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-fg-border);
+  border-radius: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Hero headline — fluid typography */
+.fg-hero-headline {
+  font-size: clamp(3rem, 6vw, 5rem);
+}
+
+/* Shield pulse rings */
+.fg-pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid var(--color-fg-accent);
+  opacity: 0;
+  animation: fg-pulse-expand 2.5s ease-out infinite;
+  pointer-events: none;
+  width: 192px;
+  height: 192px;
+}
+@keyframes fg-pulse-expand {
+  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.15; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+
+/* Shield glow */
+.fg-shield-glow {
+  filter: drop-shadow(0 0 30px rgba(0, 232, 120, 0.35));
+}
+
+/* Status dot pulse */
+.fg-status-dot-live {
+  animation: fg-dot-pulse 2s ease-in-out infinite;
+}
+@keyframes fg-dot-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 232, 120, 0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 6px transparent; }
+}
+
+/* Scoped utilities — prefix fg- */
+.fg-card {
+  background: var(--color-fg-raised);
+  border: 1px solid var(--color-fg-border-subtle);
+  border-radius: 16px;
+}
+
+.fg-card-elevated {
+  background: var(--color-fg-overlay);
+  border: 1px solid var(--color-fg-border);
+  border-radius: 16px;
+}
+
+.fg-gradient-text {
+  background: linear-gradient(135deg, var(--color-fg-accent) 0%, var(--color-fg-accent-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.fg-glow-accent {
+  box-shadow: 0 0 20px var(--color-fg-accent-glow), 0 0 40px rgba(0, 232, 120, 0.08);
+}
+
+.fg-glow-danger {
+  box-shadow: 0 0 20px var(--color-fg-danger-glow), 0 0 40px rgba(239, 68, 68, 0.08);
+}
+
+/* Gradient divider between sections */
+.fg-gradient-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-fg-accent), transparent);
+  opacity: 0.2;
+}
+
+/* FOMO chat panel background */
+.fg-fomo-chat-bg {
+  background: linear-gradient(180deg, rgba(0, 232, 120, 0.05), transparent);
+}
+
+/* Focus-visible for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-fg-accent);
+  outline-offset: 2px;
+}
+
+/* Subtle animated grid background */
+.fg-grid-bg {
+  position: relative;
+}
+.fg-grid-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--color-fg-border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-fg-border-subtle) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, black 20%, transparent 100%);
+}
+
+/* Ambient gradient orb — top of page */
+.fg-ambient-orb::after {
+  content: "";
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, rgba(0, 232, 120, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }

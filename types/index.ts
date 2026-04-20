@@ -30,13 +30,6 @@ export interface ShopResponse {
   products: Product[];
 }
 
-export interface BuyResponse {
-  orderId: string;
-  status: "processing";
-  product: { title: string; price: number };
-  totalPrice: { amount: number; currency: "usdc" };
-}
-
 // --- Vault API Response Shapes ---
 
 export interface VaultAsset {
@@ -78,6 +71,7 @@ export interface FomoAnalysis {
   alternatives: Product[];
   savingsAmount: number;
   degenComment: string;
+  isLiveApi?: boolean;
 }
 
 // --- Demo Scenarios ---
@@ -128,4 +122,5 @@ export interface ScenarioPickerProps {
   scenarios: DemoScenario[];
   onSelect: (scenario: DemoScenario) => void;
   activeId: string | null;
+  disabled?: boolean;
 }

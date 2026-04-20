@@ -15,6 +15,15 @@ export async function buyVaultAsset(
   walletAddress: string,
   email: string
 ): Promise<VaultBuyResponse> {
+  if (!slug || typeof slug !== "string" || slug.length > 200) {
+    throw new Error("Invalid asset slug");
+  }
+  if (!walletAddress || !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(walletAddress)) {
+    throw new Error("Invalid Solana wallet address");
+  }
+  if (!email || !email.includes("@") || email.length > 200) {
+    throw new Error("Invalid email address");
+  }
   return vaultBuy(slug, walletAddress, email);
 }
 
