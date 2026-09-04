@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     title: "FOMO Guard — AI Persona for Purch Vault",
     description: "The first defensive persona for AI agents. Intercepts impulse buys, finds smarter deals on Purch. Powered by x402.",
   },
+  other: { "ory-verify": "orynth-12218fd6225042e2bfff146421abaf72" },
 };
 
 export default function RootLayout({
